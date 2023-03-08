@@ -94,4 +94,33 @@ class AppointmentsController extends Controller
         }
         return response()->json($response);
     }
+
+    public function getAppointments(Request $request){
+
+        $data = $request->getContent();
+        $data = json_decode($data);
+
+        try {
+            
+            $user = auth()->user();
+
+            $appointment = DB::table('appointments')
+            ->select('id', 'date', 'time')
+            ->where('user_id', $user->id)
+            ->get();
+            
+            if (!$appointment->isEmpty()) {
+                $response["status"] = 1;
+                $response["msg"] = "Citas";
+                $response['appointments'] = $appointment;
+            } else {
+                $response["status"] = 7;
+                $response["msg"] = "You don't have appointments ";
+            }
+        } catch (\Exception $e) {
+            $response["status"] = 0;
+            $response["msg"] = "Error occur" . $e->getMessage();
+        }
+        return response()->json($response);
+    }
 }

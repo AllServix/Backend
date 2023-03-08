@@ -30,12 +30,13 @@ Route::prefix('/appointments')->group(function(){
 
     Route::middleware('auth:sanctum')->put('/registerAppointments',[AppointmentsController::class,'registerAppointments']);
     Route::middleware('auth:sanctum')->delete('/deleteAppointment',[AppointmentsController::class,'deleteAppointment']);
-    
+    Route::middleware('auth:sanctum')->get('/getAppointments',[AppointmentsController::class,'getAppointments']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){
     Route::post('/logout', [UsersController::class, 'logout']);
 });
+
 
 
 
