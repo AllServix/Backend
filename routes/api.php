@@ -19,6 +19,7 @@ use App\http\Controllers\UsersController;
 Route::prefix('/users')->group(function(){
 
     Route::put('/register', [UsersController::class, 'register']);
+    Route::post('/login', [UsersController::class, 'login']);
 
 });
 
