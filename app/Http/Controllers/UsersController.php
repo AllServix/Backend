@@ -3,17 +3,22 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Service;
+use App\Models\Appointment;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NotifyMail;
+use Session;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
     public function register(Request $request) {
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'lastName' => 'required|string',
+            'username' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|string',
             'password_confirmation' => 'required|string|same:password',
@@ -25,8 +30,7 @@ class UsersController extends Controller
         }
 
         $user = new User();
-        $user->name = $request->name;
-        $user->lastName = $request->lastName;
+        $user->username = $request->username;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->password_confirmation = Hash::make($request->password_confirmation);
@@ -39,5 +43,38 @@ class UsersController extends Controller
             "message" => 'Successfull registration'
         ]);
 
+    }
+
+    public function login(Request $request){
+        $json = $request->getContent();
+        $data = json_decode($json);
+        if($data){
+            //intentar hacer una autentificacion con los parametro name y password 
+            if(!Auth::attempt($request->only('email', 'password')))             
+            {    
+                //que recibimos en la request. Si no funciona tienes un mensaje de 401(no autorizados).                                                          
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+
+            //si no existe o no coincide con los datos guardados...
+            $user = User::where('email', 'like', $data->email)-> firstOrFail();
+
+            if(Hash::check($data->password,$user->password )){
+                $user->tokens()->delete();
+                $token = $user->createToken('auth_token', [$user->type])->plainTextToken;
+
+                return response()->json([
+                'message' => 'Hi ', $user->email,
+                'accessToken' => $token,
+                'token_type' => 'bearer',
+                'user' =>$user,
+                ]);
+            }else{
+                //esa no es tu pass
+                return response()->json([
+                'message' => 'Aprende a escribir tu contraseña cruck'
+            ]);
+            }
+        }
     }
 }
