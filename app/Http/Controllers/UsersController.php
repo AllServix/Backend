@@ -77,4 +77,34 @@ class UsersController extends Controller
             }
         }
     }
+
+    public function recoverPassword(Request $request){
+
+        $json = $request->getContent();
+        $data = json_decode($json);
+
+        $email = $data->email;
+
+        $user = User::where('email', $email)->first();
+        try {
+            if ($user) {
+
+                //Generamos nueva contraseña aleatoria
+                $newPassword = Str::random(10);
+                $user->password = Hash::make($newPassword);
+                $user->save();
+                Mail::to($user->email)->send(new NotifyMail($newPassword));
+                $response['status'] = 1;
+                $response['msg'] = "Se ha enviado su nueva contraseña. Por favor, revise su correo.";
+            } else {
+                $response['status'] = 2;
+                $response['msg'] = "Usuario no encontrado";
+            }
+        } catch (\Exception $e) {
+            $response['status'] = 0;
+            $response['msg'] = "Se ha producido un error: " . $e->getMessage();
+        }
+
+        return response()->json($response);
+    }
 }
