@@ -22,6 +22,7 @@ Route::prefix('/users')->group(function(){
     Route::put('/register', [UsersController::class, 'register']);
     Route::post('/login', [UsersController::class, 'login']);
     Route::post('/recoverPassword', [UsersController::class, 'recoverPassword']);
+    
 
 });
 
@@ -32,8 +33,10 @@ Route::prefix('/appointments')->group(function(){
     Route::middleware('auth:sanctum')->get('/getAppointments',[AppointmentsController::class,'getAppointments']);
 });
 
+Route::middleware(['auth:sanctum'])->group(function(){
+    Route::post('/logout', [UsersController::class, 'logout']);
+});
 
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+
+
