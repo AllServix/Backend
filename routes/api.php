@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\http\Controllers\UsersController;
+use App\http\Controllers\AppointmentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,13 @@ Route::prefix('/users')->group(function(){
     Route::post('/login', [UsersController::class, 'login']);
     Route::post('/recoverPassword', [UsersController::class, 'recoverPassword']);
 
+});
+
+Route::prefix('/appointments')->group(function(){
+
+    Route::middleware('auth:sanctum')->put('/registerAppointments',[AppointmentsController::class,'registerAppointments']);
+    Route::middleware('auth:sanctum')->delete('/deleteAppointment',[AppointmentsController::class,'deleteAppointment']);
+    
 });
 
 
