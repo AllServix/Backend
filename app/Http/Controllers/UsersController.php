@@ -78,6 +78,14 @@ class UsersController extends Controller
         }
     }
 
+    public function logout(){
+        // todos los tokens del usuario autenticado van a eliminarse y recibiremos el mensaje de abajo para que el usuario esté informado.
+        auth()->user()->tokens()->delete();
+        return [
+            'message' => 'you have succesfuly logged out and the token was successfully deleted'
+        ];
+    }
+
     public function recoverPassword(Request $request){
 
         $json = $request->getContent();
