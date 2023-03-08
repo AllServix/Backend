@@ -55,4 +55,43 @@ class AppointmentsController extends Controller
         }
         return response()->json($response);
     }
+
+    public function deleteAppointment(Request $request){
+
+        $validator = Validator::make(json_decode($request->getContent(), true),
+            [
+                "id" => ["required"]
+            ]
+        );
+
+        if ($validator->fails()){
+            $response['status'] = 0;
+            $response['msg'] = "Data fail in validator";
+        } else {
+            $data = $request->getContent();
+            $data = json_decode($data);
+
+            try {
+
+                $user = auth()->user();
+                $appointment = Appointment::find($data->id);
+
+                if($appointment->user_id == $user->id){
+
+                    $appointment->delete();
+
+                    $response['status'] = 1;
+                    $response['msg'] = "Appointment deleted";
+                }else{
+                    $response['status'] = 0;
+                    $response['msg'] = "Appoinment not found " ;
+                }
+                
+            } catch (\Exception $e) {
+                $response['status'] = 0;
+                $response['msg'] = "Error was found: " . $e->getMessage();
+            }
+        }
+        return response()->json($response);
+    }
 }

@@ -28,6 +28,7 @@ Route::prefix('/users')->group(function(){
 Route::prefix('/appointments')->group(function(){
 
     Route::middleware('auth:sanctum')->put('/registerAppointments',[AppointmentsController::class,'registerAppointments']);
+    Route::middleware('auth:sanctum')->delete('/deleteAppointment',[AppointmentsController::class,'deleteAppointment']);
     
 });
 
