@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\http\Controllers\UsersController;
+use App\http\Controllers\AppointmentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +16,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::prefix('/users')->group(function(){
+
+    Route::put('/register', [UsersController::class, 'register']);
+    Route::post('/login', [UsersController::class, 'login']);
+    Route::post('/recoverPassword', [UsersController::class, 'recoverPassword']);
+    
+
 });
+
+Route::prefix('/appointments')->group(function(){
+
+    Route::middleware('auth:sanctum')->put('/registerAppointments',[AppointmentsController::class,'registerAppointments']);
+    Route::middleware('auth:sanctum')->delete('/deleteAppointment',[AppointmentsController::class,'deleteAppointment']);
+    Route::middleware('auth:sanctum')->get('/getAppointments',[AppointmentsController::class,'getAppointments']);
+});
+
+Route::middleware(['auth:sanctum'])->group(function(){
+    Route::post('/logout', [UsersController::class, 'logout']);
+});
+
+
+
+
